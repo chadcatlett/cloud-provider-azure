@@ -79,6 +79,8 @@ type CloudControllerManagerOptions struct {
 	NodeStatusUpdateFrequency metav1.Duration
 
 	DynamicReloading *DynamicReloadingOptions
+
+	LoadBalancerOptions *LoadBalancerOptions
 }
 
 // NewCloudControllerManagerOptions creates a new ExternalCMServer with a default config.
@@ -100,6 +102,7 @@ func NewCloudControllerManagerOptions() (*CloudControllerManagerOptions, error) 
 		Authorization:             apiserveroptions.NewDelegatingAuthorizationOptions(),
 		NodeStatusUpdateFrequency: componentConfig.NodeStatusUpdateFrequency,
 		DynamicReloading:          defaultDynamicReloadingOptions(),
+		LoadBalancerOptions:       defaultLoadBalancerOptions(),
 	}
 
 	s.Authentication.RemoteKubeConfigFileOptional = true
@@ -145,6 +148,8 @@ func (o *CloudControllerManagerOptions) Flags(allControllers, disabledByDefaultC
 
 	o.DynamicReloading.AddFlags(fss.FlagSet("dynamic reloading"))
 
+	o.LoadBalancerOptions.AddFlags(fss.FlagSet("load balancer"))
+
 	fs := fss.FlagSet("misc")
 	fs.StringVar(&o.Master, "master", o.Master, "The address of the Kubernetes API server (overrides any value in kubeconfig).")
 	fs.StringVar(&o.Kubeconfig, "kubeconfig", o.Kubeconfig, "Path to kubeconfig file with authorization and master location information.")
@@ -178,6 +183,9 @@ func (o *CloudControllerManagerOptions) ApplyTo(
 		return err
 	}
 	if err = o.DynamicReloading.ApplyTo(&c.DynamicReloadingConfig); err != nil {
+		return err
+	}
+	if err = o.LoadBalancerOptions.ApplyTo(&c.LoadBalancerConfig); err != nil {
 		return err
 	}
 	if o.SecureServing.BindPort != 0 || o.SecureServing.Listener != nil {
@@ -243,6 +251,7 @@ func (o *CloudControllerManagerOptions) Validate(allControllers, disabledByDefau
 	errors = append(errors, o.Authentication.Validate()...)
 	errors = append(errors, o.Authorization.Validate()...)
 	errors = append(errors, o.DynamicReloading.Validate()...)
+	errors = append(errors, o.LoadBalancerOptions.Validate()...)
 
 	if len(o.KubeCloudShared.CloudProvider.Name) == 0 {
 		errors = append(errors, fmt.Errorf("--cloud-provider cannot be empty"))

@@ -57,6 +57,10 @@ import (
 
 var _ cloudprovider.LoadBalancer = (*Cloud)(nil)
 
+const (
+	loadBalancerClassContextKey = "LoadBalancerClassName"
+)
+
 // Since public IP is not a part of the load balancer on Azure,
 // there is a chance that we could orphan public IP resources while we delete the load balancer (kubernetes/kubernetes#80571).
 // We need to make sure the existence of the load balancer depends on the load balancer resource and public IP resource on Azure.
@@ -97,6 +101,11 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 
 	logger := log.FromContextOrBackground(ctx).WithName(Operation).WithValues("service", service.Name)
 	ctx = log.NewContext(ctx, logger)
+
+	if !shouldServiceLBHandleService(ctx, service) {
+		logger.V(5).Info("Skipping service", service.Name, service.Namespace)
+		return nil, false, cloudprovider.ImplementedElsewhere
+	}
 
 	existingLBs, err := az.ListLB(ctx, service)
 	if err != nil {
@@ -232,6 +241,11 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 		isOperationSucceeded = false
 	)
 
+	if !shouldServiceLBHandleService(ctx, service) {
+		logger.V(5).Info("Skipping service", service.Name, service.Name)
+		return nil, cloudprovider.ImplementedElsewhere
+	}
+
 	if az.azureResourceLocker != nil {
 		err = az.azureResourceLocker.Lock(ctx)
 		if err != nil {
@@ -326,6 +340,11 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 		mc                   = metrics.NewMetricContext("services", "update_loadbalancer", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
+
+	if !shouldServiceLBHandleService(ctx, service) {
+		logger.V(5).Info("Skipping service", service.Name, service.Name)
+		return cloudprovider.ImplementedElsewhere
+	}
 
 	logger.V(5).Info("Starting", "service-spec", log.ValueAsMap(service))
 	defer func() {
@@ -427,6 +446,12 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 		mc                   = metrics.NewMetricContext("services", "ensure_loadbalancer_deleted", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
+
+	if !shouldServiceLBHandleService(ctx, service) {
+		logger.V(5).Info("Skipping service", service.Name, service.Name)
+		return cloudprovider.ImplementedElsewhere
+	}
+
 	ctx = log.NewContext(ctx, logger)
 	if az.azureResourceLocker != nil {
 		err = az.azureResourceLocker.Lock(ctx)
@@ -4379,4 +4404,21 @@ func (az *Cloud) getDefaultFrontendIPConfigName(service *v1.Service) string {
 		return ipcName
 	}
 	return baseName
+}
+
+func shouldServiceLBHandleService(ctx context.Context, service *v1.Service) bool {
+	loadBalancerClass, ok := ctx.Value(loadBalancerClassContextKey).(string)
+	if !ok {
+		return true // if we can't find a key on the context, just assume we are good to handle it. Terrible I know.
+	}
+	if service.Spec.LoadBalancerClass == nil && loadBalancerClass == "" {
+		return true
+	}
+	if service.Spec.LoadBalancerClass == nil && loadBalancerClass != "" {
+		return false
+	}
+	if *service.Spec.LoadBalancerClass == loadBalancerClass {
+		return true
+	}
+	return false
 }

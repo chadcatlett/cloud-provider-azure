@@ -142,6 +142,9 @@ func TestDefaultFlags(t *testing.T) {
 			CloudConfigSecretNamespace: "kube-system",
 			CloudConfigKey:             "",
 		},
+		LoadBalancerOptions: &LoadBalancerOptions{
+			LoadBalancerClass: "",
+		},
 	}
 	if !reflect.DeepEqual(expected, s) {
 		t.Errorf("Got different run options than expected.\nDifference detected on:\n%s", diff.ObjectReflectDiff(expected, s))
@@ -186,6 +189,7 @@ func TestAddFlags(t *testing.T) {
 		"--use-service-account-credentials=false",
 		"--enable-dynamic-reloading=true",
 		"--cloud-config-secret-name=test-secret",
+		"--loadbalancerclass=azurelb",
 	}
 	err := fs.Parse(args)
 	if err != nil {
@@ -287,6 +291,9 @@ func TestAddFlags(t *testing.T) {
 			CloudConfigSecretName:      "test-secret",
 			CloudConfigSecretNamespace: "kube-system",
 			CloudConfigKey:             "cloud-config",
+		},
+		LoadBalancerOptions: &LoadBalancerOptions{
+			LoadBalancerClass: "azurelb",
 		},
 	}
 	if !reflect.DeepEqual(expected, s) {

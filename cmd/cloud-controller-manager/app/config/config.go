@@ -60,6 +60,7 @@ type Config struct {
 	SharedInformers informers.SharedInformerFactory
 
 	DynamicReloadingConfig DynamicReloadingConfig
+	LoadBalancerConfig     LoadBalancerConfig
 }
 
 type DynamicReloadingConfig struct {
@@ -67,6 +68,10 @@ type DynamicReloadingConfig struct {
 	CloudConfigSecretName      string
 	CloudConfigSecretNamespace string
 	CloudConfigKey             string
+}
+
+type LoadBalancerConfig struct {
+	LoadBalancerClass string
 }
 
 type completedConfig struct {

@@ -98,7 +98,8 @@ func startServiceController(ctx context.Context, controllerContext genericcontro
 		return nil, false, nil
 	}
 
-	go serviceController.Run(ctx, int(completedConfig.ComponentConfig.ServiceController.ConcurrentServiceSyncs), controllerContext.ControllerManagerMetrics)
+	newCtx := context.WithValue(ctx, "LoadBalancerClass", completedConfig.LoadBalancerConfig.LoadBalancerClass)
+	go serviceController.Run(newCtx, int(completedConfig.ComponentConfig.ServiceController.ConcurrentServiceSyncs), controllerContext.ControllerManagerMetrics)
 
 	return nil, true, nil
 }
