@@ -146,6 +146,11 @@ func (az *Cloud) reconcileService(ctx context.Context, clusterName string, servi
 
 	logger.V(2).Info("Start reconciling Service", "lb", az.GetLoadBalancerName(ctx, clusterName, service))
 
+	if !shouldServiceLBHandleService(ctx, service) {
+		logger.V(5).Info("Skipping service", service.Name, service.Namespace)
+		return nil, cloudprovider.ImplementedElsewhere
+	}
+
 	lb, needRetry, err := az.reconcileLoadBalancer(ctx, clusterName, service, nodes, true /* wantLb */)
 	if err != nil {
 		logger.Error(err, "Failed to reconcile LoadBalancer")
