@@ -98,6 +98,16 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	logger := log.FromContextOrBackground(ctx).WithName(Operation).WithValues("service", service.Name)
 	ctx = log.NewContext(ctx, logger)
 
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+
+	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		managed, ok, isServiceManagedByCloudProvider)
+
+	if !isServiceManagedByCloudProvider {
+		return nil, false, cloudprovider.ImplementedElsewhere
+	}
+
 	existingLBs, err := az.ListLB(ctx, service)
 	if err != nil {
 		return nil, az.existsPip(ctx, clusterName, service), err
@@ -232,6 +242,16 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 		isOperationSucceeded = false
 	)
 
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+
+	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		managed, ok, isServiceManagedByCloudProvider)
+
+	if !isServiceManagedByCloudProvider {
+		return nil, cloudprovider.ImplementedElsewhere
+	}
+
 	if az.azureResourceLocker != nil {
 		err = az.azureResourceLocker.Lock(ctx)
 		if err != nil {
@@ -326,7 +346,15 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 		mc                   = metrics.NewMetricContext("services", "update_loadbalancer", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
+	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		managed, ok, isServiceManagedByCloudProvider)
+
+	if !isServiceManagedByCloudProvider {
+		return cloudprovider.ImplementedElsewhere
+	}
 	logger.V(5).Info("Starting", "service-spec", log.ValueAsMap(service))
 	defer func() {
 		mc.ObserveOperationWithResult(isOperationSucceeded)
@@ -427,6 +455,16 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 		mc                   = metrics.NewMetricContext("services", "ensure_loadbalancer_deleted", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+
+	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		managed, ok, isServiceManagedByCloudProvider)
+
+	if !isServiceManagedByCloudProvider {
+		return cloudprovider.ImplementedElsewhere
+	}
+
 	ctx = log.NewContext(ctx, logger)
 	if az.azureResourceLocker != nil {
 		err = az.azureResourceLocker.Lock(ctx)
