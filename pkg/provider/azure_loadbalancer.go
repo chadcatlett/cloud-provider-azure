@@ -101,8 +101,8 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
-	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		managed, ok, isServiceManagedByCloudProvider)
+	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return nil, false, cloudprovider.ImplementedElsewhere
@@ -245,8 +245,8 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
-	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		managed, ok, isServiceManagedByCloudProvider)
+	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return nil, cloudprovider.ImplementedElsewhere
@@ -349,8 +349,8 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
-	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		managed, ok, isServiceManagedByCloudProvider)
+	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return cloudprovider.ImplementedElsewhere
@@ -458,8 +458,8 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
-	klog.Warningf("managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		managed, ok, isServiceManagedByCloudProvider)
+	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
+		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return cloudprovider.ImplementedElsewhere
