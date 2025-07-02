@@ -102,7 +102,7 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
+		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return nil, false, cloudprovider.ImplementedElsewhere
@@ -246,7 +246,7 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
+		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return nil, cloudprovider.ImplementedElsewhere
@@ -350,7 +350,7 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
+		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return cloudprovider.ImplementedElsewhere
@@ -459,7 +459,7 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Warningf("ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
-		service.Namespace, service.Name, ok, isServiceManagedByCloudProvider)
+		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
 
 	if !isServiceManagedByCloudProvider {
 		return cloudprovider.ImplementedElsewhere
