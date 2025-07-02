@@ -98,6 +98,19 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	logger := log.FromContextOrBackground(ctx).WithName(Operation).WithValues("service", service.Name)
 	ctx = log.NewContext(ctx, logger)
 
+	if az.LoadBalancerClassEnabled {
+		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
+			klog.Infof("ns=%s, name=%s: not managed by %s",
+				service.Namespace, service.Name, az.LoadBalancerClassName)
+			return nil, false, cloudprovider.ImplementedElsewhere
+		}
+		klog.Infof("ns=%s, name=%s: managed by %s",
+			service.Namespace, service.Name, az.LoadBalancerClassName)
+	} else {
+		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+			service.Namespace, service.Name)
+	}
+
 	existingLBs, err := az.ListLB(ctx, service)
 	if err != nil {
 		return nil, az.existsPip(ctx, clusterName, service), err
@@ -220,7 +233,18 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 
 	ctx, span := trace.BeginReconcile(ctx, trace.DefaultTracer(), Operation, attributes.FeatureOfService(service)...)
 	defer func() { span.Observe(ctx, err) }()
-
+	if az.LoadBalancerClassEnabled {
+		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
+			klog.Infof("ns=%s, name=%s: not managed by %s",
+				service.Namespace, service.Name, az.LoadBalancerClassName)
+			return nil, cloudprovider.ImplementedElsewhere
+		}
+		klog.Infof("ns=%s, name=%s: managed by %s",
+			service.Namespace, service.Name, az.LoadBalancerClassName)
+	} else {
+		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+			service.Namespace, service.Name)
+	}
 	// Serialize service reconcile process
 	az.serviceReconcileLock.Lock()
 	defer az.serviceReconcileLock.Unlock()
@@ -315,7 +339,18 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 	var err error
 	ctx, span := trace.BeginReconcile(ctx, trace.DefaultTracer(), Operation, attributes.FeatureOfService(service)...)
 	defer func() { span.Observe(ctx, err) }()
-
+	if az.LoadBalancerClassEnabled {
+		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
+			klog.Infof("ns=%s, name=%s: not managed by %s",
+				service.Namespace, service.Name, az.LoadBalancerClassName)
+			return cloudprovider.ImplementedElsewhere
+		}
+		klog.Infof("ns=%s, name=%s: managed by %s",
+			service.Namespace, service.Name, az.LoadBalancerClassName)
+	} else {
+		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+			service.Namespace, service.Name)
+	}
 	// Serialize service reconcile process
 	az.serviceReconcileLock.Lock()
 	defer az.serviceReconcileLock.Unlock()
@@ -416,7 +451,18 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 
 	ctx, span := trace.BeginReconcile(ctx, trace.DefaultTracer(), Operation, attributes.FeatureOfService(service)...)
 	defer func() { span.Observe(ctx, err) }()
-
+	if az.LoadBalancerClassEnabled {
+		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
+			klog.Infof("ns=%s, name=%s: not managed by %s",
+				service.Namespace, service.Name, az.LoadBalancerClassName)
+			return cloudprovider.ImplementedElsewhere
+		}
+		klog.Infof("ns=%s, name=%s: managed by %s",
+			service.Namespace, service.Name, az.LoadBalancerClassName)
+	} else {
+		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+			service.Namespace, service.Name)
+	}
 	// Serialize service reconcile process
 	az.serviceReconcileLock.Lock()
 	defer az.serviceReconcileLock.Unlock()

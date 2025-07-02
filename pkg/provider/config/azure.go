@@ -88,6 +88,11 @@ type Config struct {
 	// in `SystemTags` after the update of `Tags`.
 	// SystemTags now support prefix match, which means that if a key in `SystemTags` is a prefix of a key in `Tags`, that tag will not be deleted
 	SystemTags string `json:"systemTags,omitempty" yaml:"systemTags,omitempty"`
+	// If set restrict processing of services to only matching classes
+	LoadBalancerClassEnabled bool `json:"loadBalancerClassEnabled,omitempty" yaml:"loadBalancerClassEnabled,omitempty"`
+	// LoadBalancerClassName to use in filtering services, must enable LoadBalancerClassFiltering to use
+	LoadBalancerClassName string `json:"loadBalancerClassName,omitempty" yaml:"loadBalancerClassName,omitempty"`
+
 	// Sku of Load Balancer and Public IP. Candidate values are: basic and standard.
 	// If not set, it will be default to basic.
 	LoadBalancerSKU string `json:"loadBalancerSku,omitempty" yaml:"loadBalancerSku,omitempty"`
