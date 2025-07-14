@@ -99,7 +99,7 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	ctx = log.NewContext(ctx, logger)
 
 	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
-	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.TrueAnnotationValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
 		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
@@ -243,7 +243,7 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 	)
 
 	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
-	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.TrueAnnotationValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
 		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
@@ -347,7 +347,7 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 		isOperationSucceeded = false
 	)
 	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
-	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.TrueAnnotationValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
 		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
@@ -456,7 +456,7 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 		isOperationSucceeded = false
 	)
 	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
-	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
+	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.TrueAnnotationValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
 		service.Namespace, service.Name, managed, ok, isServiceManagedByCloudProvider)
