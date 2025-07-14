@@ -100,14 +100,14 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 
 	if az.LoadBalancerClassEnabled {
 		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
-			klog.Infof("ns=%s, name=%s: not managed by %s",
+			klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: not managed by %s",
 				service.Namespace, service.Name, az.LoadBalancerClassName)
 			return nil, false, cloudprovider.ImplementedElsewhere
 		}
-		klog.Infof("ns=%s, name=%s: managed by %s",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: managed by %s",
 			service.Namespace, service.Name, az.LoadBalancerClassName)
 	} else {
-		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: using defualt load balancer behavior",
 			service.Namespace, service.Name)
 	}
 
@@ -235,14 +235,14 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 	defer func() { span.Observe(ctx, err) }()
 	if az.LoadBalancerClassEnabled {
 		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
-			klog.Infof("ns=%s, name=%s: not managed by %s",
+			klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: not managed by %s",
 				service.Namespace, service.Name, az.LoadBalancerClassName)
 			return nil, cloudprovider.ImplementedElsewhere
 		}
-		klog.Infof("ns=%s, name=%s: managed by %s",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: managed by %s",
 			service.Namespace, service.Name, az.LoadBalancerClassName)
 	} else {
-		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: using defualt load balancer behavior",
 			service.Namespace, service.Name)
 	}
 	// Serialize service reconcile process
@@ -341,14 +341,14 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 	defer func() { span.Observe(ctx, err) }()
 	if az.LoadBalancerClassEnabled {
 		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
-			klog.Infof("ns=%s, name=%s: not managed by %s",
+			klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: not managed by %s",
 				service.Namespace, service.Name, az.LoadBalancerClassName)
 			return cloudprovider.ImplementedElsewhere
 		}
-		klog.Infof("ns=%s, name=%s: managed by %s",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: managed by %s",
 			service.Namespace, service.Name, az.LoadBalancerClassName)
 	} else {
-		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: using defualt load balancer behavior",
 			service.Namespace, service.Name)
 	}
 	// Serialize service reconcile process
@@ -453,14 +453,14 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 	defer func() { span.Observe(ctx, err) }()
 	if az.LoadBalancerClassEnabled {
 		if *service.Spec.LoadBalancerClass != az.LoadBalancerClassName {
-			klog.Infof("ns=%s, name=%s: not managed by %s",
+			klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: not managed by %s",
 				service.Namespace, service.Name, az.LoadBalancerClassName)
 			return cloudprovider.ImplementedElsewhere
 		}
-		klog.Infof("ns=%s, name=%s: managed by %s",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: managed by %s",
 			service.Namespace, service.Name, az.LoadBalancerClassName)
 	} else {
-		klog.Infof("ns=%s, name=%s: using defualt load balancer behavior",
+		klog.Infof("LoadBalancerClass Logic: ns=%s, name=%s: using defualt load balancer behavior",
 			service.Namespace, service.Name)
 	}
 	// Serialize service reconcile process
