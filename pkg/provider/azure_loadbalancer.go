@@ -98,7 +98,7 @@ func (az *Cloud) GetLoadBalancer(ctx context.Context, clusterName string, servic
 	logger := log.FromContextOrBackground(ctx).WithName(Operation).WithValues("service", service.Name)
 	ctx = log.NewContext(ctx, logger)
 
-	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
@@ -242,7 +242,7 @@ func (az *Cloud) EnsureLoadBalancer(ctx context.Context, clusterName string, ser
 		isOperationSucceeded = false
 	)
 
-	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
@@ -346,7 +346,7 @@ func (az *Cloud) UpdateLoadBalancer(ctx context.Context, clusterName string, ser
 		mc                   = metrics.NewMetricContext("services", "update_loadbalancer", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
-	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
@@ -455,7 +455,7 @@ func (az *Cloud) EnsureLoadBalancerDeleted(ctx context.Context, clusterName stri
 		mc                   = metrics.NewMetricContext("services", "ensure_loadbalancer_deleted", az.ResourceGroup, az.getNetworkResourceSubscriptionID(), svcName)
 		isOperationSucceeded = false
 	)
-	managed, ok := service.ObjectMeta.Annotations[consts.ManagedByAzureLabel]
+	managed, ok := service.ObjectMeta.Labels[consts.ManagedByAzureLabel]
 	isServiceManagedByCloudProvider := !ok || !strings.EqualFold(managed, consts.NotManagedByAzureLabelValue)
 
 	klog.Infof("LoadBalancerDecisionLogic: ns=%s, name=%s, managed=%v, ok=%v, isServiceManagedByCloudProvider=%v",
